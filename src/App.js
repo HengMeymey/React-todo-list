@@ -1,31 +1,27 @@
 import { useState, useEffect } from "react";
+import { BrowserRouter as Router, Route, Routes, Link } from "react-router-dom";
 import './App.css';
 import InputField from './components/InputField';
 import ListItem from "./components/ListItem";
 import SearchBar from "./components/SearchBar";
+import Calculator from "./components/Calculator";
 
 function App() {
   const [todoList, setTodoList] = useState([]);
 
   useEffect(() => {
-    const savedTodos = localStorage.getItem("listItem")
+    const savedTodos = localStorage.getItem("listItem");
     if (savedTodos) {
-      setTodoList(savedTodos.split(","))
+      setTodoList(savedTodos.split(","));
     }
-  }, [])
+  }, []);
 
   useEffect(() => {
     console.log('Update local storage');
     if (todoList.length !== 0) {
-      localStorage.setItem("listItem", todoList)
+      localStorage.setItem("listItem", todoList);
     }
-  }, [todoList])
-
-  useEffect(() => {
-    return () => {
-      console.log('Component unmount');
-    }
-  }, )
+  }, [todoList]);
 
   const addItem = (newTodo) => {
     setTodoList([...todoList, newTodo]);
@@ -40,16 +36,31 @@ function App() {
   };
 
   return (
-    <div className="App">
-      <h1>Todo List</h1>
-      <InputField addItem={addItem}/>
-      {todoList.map((todo,index) => {
-        return (
-          <ListItem key={index} title={todo} onDelete={() => deleteItem(index)} />
-        );
-      })}
-      <SearchBar />
-    </div>
+    <Router>
+      <div className="App">
+        <nav>
+          <Link to="/">Todo List</Link> | <Link to="/calculator">Calculator</Link>
+        </nav>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div>
+                <h1>Todo List</h1>
+                <InputField addItem={addItem} />
+                {todoList.map((todo, index) => {
+                  return (
+                    <ListItem key={index} title={todo} onDelete={() => deleteItem(index)} />
+                  );
+                })}
+                <SearchBar />
+              </div>
+            }
+          />
+          <Route path="/calculator" element={<Calculator />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
